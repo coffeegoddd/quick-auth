@@ -5,6 +5,7 @@ import {
   Route, 
   Redirect
 } from 'react-router-dom';
+import { withCookies } from 'react-cookie';
 import axios from 'axios';
 import Nav from './Nav';
 import Signup from './Signup';
@@ -18,13 +19,18 @@ const PrivateRoute = ({ component: Component, auth, ...rest}) => (
 );
 
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       isAuthenticated: false,
     };
     this.authenticate = this.authenticate.bind(this);
     this.signup = this.signup.bind(this);
+    this.updateSessionId = this.updateSessionId.bind(this);
+  }
+
+  componentDidMount() {
+    this.updateSessionId();
   }
 
   authenticate(username, email, password) {
@@ -53,6 +59,25 @@ class App extends Component {
     })
       .then(({ data }) => {
         console.log(data);
+        this.setState({
+          isAuthenticated: true,
+        });
+      })
+      .catch(err => console.log(err));
+  }
+
+  updateSessionId() {
+    const { coffee } = this.props.cookies.cookies;
+    // console.log('current cookie -->', coffee);
+    axios.post(`/validate`, {
+      sessionId: coffee,
+    })
+      .then(({ data }) => {
+        if (data === 'success') {
+          this.setState({
+            isAuthenticated: true,
+          });
+        }
       })
       .catch(err => console.log(err));
   }
@@ -70,11 +95,15 @@ class App extends Component {
             path="/login"
             render={(props) => <Login {...props} authenticate={this.authenticate}/>}
           />
-          <PrivateRoute path="/hidden" component={Hidden} auth={this.state.isAuthenticated}/>
+          <PrivateRoute
+            path="/hidden"
+            component={Hidden}
+            auth={this.state.isAuthenticated}
+          />
         </Switch>
       </Router>
     );
   }
 }
 
-export default App;
+export default withCookies(App);
