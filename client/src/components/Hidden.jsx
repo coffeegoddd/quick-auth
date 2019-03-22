@@ -3,7 +3,7 @@ import React from 'react';
 const Hidden = () => (
   <div>
     Follow me on twitter
-    @coffeegodddm ;)
+    @coffeegoddd ;)
   </div>
 );
 
