@@ -8,7 +8,7 @@ const cookieParser = (str) => {
   return cookieMap.coffee;
 };
 
-module.exports = (req, res, next) => {
+const getOrSetCookie = (req, res, next) => {
   const cookie = cookieParser(req.headers.cookie);
   if (!cookie) {
     res.cookie('coffee', 'w3lc0m3', { maxAge: 180000 });
@@ -17,3 +17,6 @@ module.exports = (req, res, next) => {
     next();
   }
 };
+
+
+module.exports = { cookieParser, getOrSetCookie }
