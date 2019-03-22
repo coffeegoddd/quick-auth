@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { validateEmail, validatePassword } from '../utils/validators';
 import PropTypes from 'prop-types';
 
 class Login extends Component {
@@ -9,12 +9,19 @@ class Login extends Component {
       username: '',
       email: '',
       password: '',
-      redirectToReferrer: false,
+      validEmail: false,
+      validPassword: false,
+      submitClicked: false,
     };
     this.handleUsername = this.handleUsername.bind(this);
     this.handleEmail = this.handleEmail.bind(this);
     this.handlePassword = this.handlePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+
+    this.msgMap = {
+      email: 'please enter a valid email, like harry@potter.com',
+      password: 'passwords must > 6 chars, have a cap, a num, and a special char',
+    };
   }
 
   handleUsername(e) {
@@ -41,18 +48,28 @@ class Login extends Component {
   handleSubmit() {
     this.setState((state) => {
       const { username, email, password } = state;
+      const validEmail = validateEmail(email);
+      const validPassword = validatePassword(password);
+      if (!validEmail || ! validPassword) {
+        return {
+          validEmail,
+          validPassword,
+          submitClicked: true,
+        };
+      }
       this.props.authenticate(username, email, password);
       return {
         username: '',
         email: '',
         password: '',
+        validEmail: false,
+        validPassword: false,
+        submitClicked: false,
       };
     });
   }
 
   render() {
-    const { redirectToReferrer } = this.state;
-    if (redirectToReferrer) return <Redirect to="/" />;
     return (
       <div>
         LOGIN
@@ -74,6 +91,7 @@ class Login extends Component {
             onChange={this.handleEmail}
           />
         </form>
+        {this.state.email && this.state.submitClicked && !this.state.validEmail ? <div>{this.msgMap['email']}</div> : null }
         <form>
           <input
             type="password"
@@ -83,6 +101,7 @@ class Login extends Component {
             onChange={this.handlePassword}
           />
         </form>
+        {this.state.password && this.state.submitClicked && !this.state.validPassword ? <div>{this.msgMap['password']}</div> : null }
         <button onClick={this.handleSubmit}>submit</button>
       </div>
     );

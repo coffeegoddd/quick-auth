@@ -11,7 +11,7 @@ const db = {};
 db['kevin5@tax.com'] = {
   username: 'kevin',
   email: 'kevin5@tax.com',
-  password: '123456',
+  password: 'helloWorld1',
 };
 
 // fake sessionStore
@@ -74,7 +74,6 @@ app.post('/signup', (req, res, next) => {
   
   // if the user exists, send error
   if (db[email]) return res.status(401).send('user already exists');
-  
   // write to fake db, hash password
   password = bcrypt.hashSync(password, bcrypt.genSaltSync());
   db[email] = { username, email, password };
@@ -105,7 +104,6 @@ app.post('/validate', (req, res, next) => {
 app.delete('/logout', (req, res, next) => {
   res.clearCookie('coffee');
   const { sessionId } = req.body;
-
   if (ss[sessionId]) {
     delete ss[sessionId];
     res.status(200).send('you are logged out');

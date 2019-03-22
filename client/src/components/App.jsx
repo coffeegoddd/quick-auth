@@ -26,6 +26,7 @@ class App extends Component {
     this.state = {
       isAuthenticated: false,
       sessionId: coffee,
+      restricted: '',
     };
     this.authenticate = this.authenticate.bind(this);
     this.signup = this.signup.bind(this);
@@ -38,7 +39,7 @@ class App extends Component {
   }
 
   authenticate(username, email, password) {
-    if (!email) return;
+    if (!email || !username) return;
     axios.post(`/auth/`, {
       username,
       email,
@@ -50,6 +51,7 @@ class App extends Component {
           this.setState({
             isAuthenticated: true,
             sessionId,
+            restricted: '',
           });
         } else {
           this.setState({
@@ -57,11 +59,16 @@ class App extends Component {
           });
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          restricted: 'No account exists, please go to signup',
+        });
+      });
   }
   
   signup(username, email, password) {
-    if (!email) return;
+    if (!email || !username) return;
     axios.post(`/signup`, {
       username,
       email,
@@ -72,6 +79,7 @@ class App extends Component {
         this.setState({
           isAuthenticated: true,
           sessionId,
+          restricted: '',
         });
       })
       .catch(err => console.log(err));
@@ -93,11 +101,13 @@ class App extends Component {
   }
 
   handleLogout() {
-    const { coffee } = this.props.cookies.cookies;
-    axios.delete(`/logout`, { data: { sessionId: coffee } })
-      .then(({ data }) => {
+    const { sessionId } = this.state;
+    axios.delete(`/logout`, { data: { sessionId, } })
+      .then(() => {
         this.setState({
           isAuthenticated: false,
+          restricted: '',
+          sessionId: 'l0GoUt',
         });
       })
       .catch(err => console.log(err));
@@ -123,6 +133,7 @@ class App extends Component {
           />
         </Switch>
         {this.state.isAuthenticated ? <Logout logout={this.handleLogout}/> : null}
+        {this.state.restricted ? this.state.restricted : null }
       </Router>
     );
   }
