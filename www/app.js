@@ -3,7 +3,7 @@ const parser = require('body-parser');
 const path = require('path');
 const bcrypt = require('bcrypt');
 
-const getOrSetCookie = require('./middleware');
+const { getOrSetCookie, cookieParser } = require('./middleware');
 const app = express();
 
 // fake db
@@ -45,21 +45,32 @@ app.post('/auth', (req, res, next) => {
     // simulate a web token
     const coffee = 'g0dDb' + Date.now() + 'c0ff33';
     const salt = bcrypt.genSaltSync();
-    const hash = bcrypt.hashSync(coffee, salt);
+    const hash = 'c' + bcrypt.hashSync(coffee, salt);
 
     res.cookie('coffee', hash, { maxAge: 180000 });
 
     // store token in sessionStore and kickoff timer
     ss[hash] = true;
     ssExpire(hash);
-  }
 
-  return user ? res.status(201).send('success'): res.status(401).send('invalid') ;
+    const valid = {
+      msg: 'success',
+      sessionId: hash,
+    };
+
+    res.status(201).send(valid);
+  } else {
+    const invalid = {
+      msg: 'invalid',
+      sessionId: 'd3nI3b',
+    };
+    return res.status(401).send(invalid);
+  }
 });
 
 // signup route
 app.post('/signup', (req, res, next) => {
-  const { username, email, password } = req.body;
+  let { username, email, password } = req.body;
   
   // if the user exists, send error
   if (db[email]) return res.status(401).send('user already exists');
@@ -73,20 +84,34 @@ app.post('/signup', (req, res, next) => {
 
   const coffee = 'g0dDb' + Date.now() + 'c0ff33';
   const salt = bcrypt.genSaltSync();
-  const hash = bcrypt.hashSync(coffee, salt);
+  const hash = 's' + bcrypt.hashSync(coffee, salt);
 
   res.cookie('coffee', hash, { maxAge: 180000 });
 
   ss[hash] = true;
   ssExpire(hash);
 
-  return db[email] ? res.status(201).send('success'): res.status(401).send('invalid') ;
+  return db[email] ? res.status(201).send({ sessionId: hash }): res.status(401).send('invalid') ;
 });
 
 // validate sessions route
 app.post('/validate', (req, res, next) => {
   const { sessionId } = req.body;
   return ss[sessionId] ? res.status(201).send('success'): res.status(200).send('invalid');
+});
+
+
+// logout route
+app.delete('/logout', (req, res, next) => {
+  res.clearCookie('coffee');
+  const { sessionId } = req.body;
+
+  if (ss[sessionId]) {
+    delete ss[sessionId];
+    res.status(200).send('you are logged out');
+  } else {
+    res.status(401).send('session not terminated');
+  }
 });
 
 // send all endpoints the html

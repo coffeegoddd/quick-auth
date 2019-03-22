@@ -11,6 +11,7 @@ import Nav from './Nav';
 import Signup from './Signup';
 import Login from './Login';
 import Hidden from './Hidden';
+import Logout from './Logout';
 
 const PrivateRoute = ({ component: Component, auth, ...rest}) => (
   <Route {...rest} render={(props) => {
@@ -21,16 +22,19 @@ const PrivateRoute = ({ component: Component, auth, ...rest}) => (
 class App extends Component {
   constructor(props) {
     super(props);
+    const { coffee } = this.props.cookies.cookies
     this.state = {
       isAuthenticated: false,
+      sessionId: coffee,
     };
     this.authenticate = this.authenticate.bind(this);
     this.signup = this.signup.bind(this);
-    this.updateSessionId = this.updateSessionId.bind(this);
+    this.isSessionValid = this.isSessionValid.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
   }
 
   componentDidMount() {
-    this.updateSessionId();
+    this.isSessionValid();
   }
 
   authenticate(username, email, password) {
@@ -41,9 +45,15 @@ class App extends Component {
       password,
     })
       .then(({ data }) => {
-        if (data === 'success') {
+        const { msg, sessionId } = data;
+        if (msg === 'success') {
           this.setState({
             isAuthenticated: true,
+            sessionId,
+          });
+        } else {
+          this.setState({
+            sessionId,
           });
         }
       })
@@ -58,19 +68,19 @@ class App extends Component {
       password,
     })
       .then(({ data }) => {
-        console.log(data);
+        const { sessionId } = data;
         this.setState({
           isAuthenticated: true,
+          sessionId,
         });
       })
       .catch(err => console.log(err));
   }
 
-  updateSessionId() {
-    const { coffee } = this.props.cookies.cookies;
-    // console.log('current cookie -->', coffee);
+  isSessionValid() {
+    const { sessionId } = this.state;
     axios.post(`/validate`, {
-      sessionId: coffee,
+      sessionId,
     })
       .then(({ data }) => {
         if (data === 'success') {
@@ -78,6 +88,17 @@ class App extends Component {
             isAuthenticated: true,
           });
         }
+      })
+      .catch(err => console.log(err));
+  }
+
+  handleLogout() {
+    const { coffee } = this.props.cookies.cookies;
+    axios.delete(`/logout`, { data: { sessionId: coffee } })
+      .then(({ data }) => {
+        this.setState({
+          isAuthenticated: false,
+        });
       })
       .catch(err => console.log(err));
   }
@@ -101,6 +122,7 @@ class App extends Component {
             auth={this.state.isAuthenticated}
           />
         </Switch>
+        {this.state.isAuthenticated ? <Logout logout={this.handleLogout}/> : null}
       </Router>
     );
   }
