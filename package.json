@@ -1,0 +1,39 @@
+{
+  "name": "quick-auth",
+  "version": "1.0.0",
+  "description": "quick implementation of authentication",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "react-dev": "webpack -w",
+    "server-dev": "nodemon www/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coffeegoddd/quick-auth.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/coffeegoddd/quick-auth/issues"
+  },
+  "homepage": "https://github.com/coffeegoddd/quick-auth#readme",
+  "dependencies": {
+    "@babel/core": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/preset-react": "^7.0.0",
+    "axios": "^0.18.0",
+    "babel-loader": "^8.0.5",
+    "bcrypt": "^3.0.5",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "nodemon": "^1.18.10",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
+    "react-router-dom": "^5.0.0",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
+  }
+}
