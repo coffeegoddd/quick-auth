@@ -9,11 +9,11 @@ const cookieParser = (str) => {
 };
 
 const getOrSetCookie = (req, res, next) => {
-  if (!req.cookies) {
+  if (!req.headers.cookie) {
     res.cookie('coffee', 'w3lc0m3', { maxAge: 180000 });
     next();
   } else {
-    const cookie = cookieParser(req.cookies);
+    const cookie = cookieParser(req.headers.cookie);
     if (!cookie) res.cookie('coffee', 'w3lc0m3', { maxAge: 180000 });
     next();
   }
