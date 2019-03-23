@@ -36,7 +36,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log('actual cookie -->', this.props.cookies.cookies.coffee);
     this.getCookieUpdateSessionId();
     this.isSessionValid();
   }
@@ -89,7 +88,6 @@ class App extends Component {
   }
 
   isSessionValid() {
-    console.log('checking...');
     this.setState((state) => {
       const { sessionId } = state;
       axios.post(`/validate`, {
@@ -97,7 +95,6 @@ class App extends Component {
       })
         .then(({ data }) => {
           if (data === 'success') {
-            console.log('valid');
             this.setState({
               isAuthenticated: true,
             });
@@ -140,7 +137,7 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <Nav />{console.log(this.state.sessionId)}
+        <Nav />
         <Switch>
           <Route
             path="/signup"

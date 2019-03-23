@@ -95,7 +95,6 @@ app.post('/signup', (req, res, next) => {
 
 // validate sessions route
 app.post('/validate', (req, res, next) => {
-  console.log(ss)
   const { sessionId } = req.body;
   if (ss[sessionId]) return res.status(201).send('success');
   else {
