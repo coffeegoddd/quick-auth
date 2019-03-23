@@ -108,4 +108,8 @@ class Login extends Component {
   }
 }
 
+Login.propTypes = {
+  authenticate: PropTypes.func,
+};
+
 export default Login;

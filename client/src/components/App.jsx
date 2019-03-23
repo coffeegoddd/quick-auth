@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   BrowserRouter as Router,
   Switch, 
@@ -138,5 +139,9 @@ class App extends Component {
     );
   }
 }
+
+App.propTypes = {
+  cookies: PropTypes.object,
+};
 
 export default withCookies(App);

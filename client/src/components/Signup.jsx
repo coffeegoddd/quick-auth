@@ -108,4 +108,8 @@ class Signup extends Component {
   }
 }
 
+Signup.propTypes = {
+  signup: PropTypes.func,
+};
+
 export default Signup;

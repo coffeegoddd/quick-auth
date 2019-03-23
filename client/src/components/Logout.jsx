@@ -7,4 +7,7 @@ const Logout = ({ logout }) => (
   </button>
 );
 
+Logout.proptypes = {
+  logout: PropTypes.func,
+};
 export default Logout;
