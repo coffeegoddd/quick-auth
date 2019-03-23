@@ -33,6 +33,7 @@ class Signup extends Component {
     this.setState({
       username,
     });
+    this.checkUsername(e);
   }
 
   handleEmail(e) {
@@ -40,6 +41,7 @@ class Signup extends Component {
     this.setState({
       email,
     });
+    this.checkEmail(e);
   }
 
   handlePassword(e) {
@@ -47,21 +49,33 @@ class Signup extends Component {
     this.setState({
       password,
     });
+    this.checkPassword(e);
   }
 
   handleSubmit() {
-      if (this.state.validUsername && this.state.validEmail && this.state.validPassword) {
-        const { username, email, password } = this.state;
+    this.setState((state) => {
+      const { 
+        validUsername,
+        validEmail,
+        validPassword,
+        username,
+        email,
+        password,
+      } = state;
+      if (validUsername && validEmail && validPassword) {
         this.props.signup(username, email, password);
-        this.setState({
+        return {
           username: '',
           email: '',
           password: '',
+          validUsername: false,
           validEmail: false,
           validPassword: false,
-        });
+        };
+      } else {
+        return;
       }
-    return;
+    });
   }
 
   checkPassword(e) {
@@ -94,7 +108,6 @@ class Signup extends Component {
             name="username"
             value={this.state.username}
             onChange={this.handleUsername}
-            onBlur={(e) => this.checkUsername(e)}
           />
         </div>
         <div>
@@ -104,7 +117,6 @@ class Signup extends Component {
             name="email"
             value={this.state.email}
             onChange={this.handleEmail}
-            onBlur={(e) => this.checkEmail(e)}
           />
         </div>
         {this.state.email && !this.state.validEmail ? <div>{this.msgMap['email']}</div> : null }
@@ -115,7 +127,6 @@ class Signup extends Component {
             name="password"
             value={this.state.password}
             onChange={this.handlePassword}
-            onBlur={(e) => this.checkPassword(e)}
           />
         </div>
         {this.state.password && !this.state.validPassword ? <div>{this.msgMap['password']}</div> : null }

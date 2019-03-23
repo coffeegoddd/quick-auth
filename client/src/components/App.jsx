@@ -98,7 +98,12 @@ class App extends Component {
           });
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          sessionId: '',
+        });
+      });
   }
 
   handleLogout() {

@@ -34,6 +34,7 @@ class Login extends Component {
     this.setState({
       username,
     });
+    this.checkUsername(e);
   }
 
   handleEmail(e) {
@@ -41,6 +42,7 @@ class Login extends Component {
     this.setState({
       email,
     });
+    this.checkEmail(e);
   }
 
   handlePassword(e) {
@@ -48,28 +50,42 @@ class Login extends Component {
     this.setState({
       password,
     });
+    this.checkPassword(e);
   }
 
   handleSubmit() {
-    if (this.state.validUsername && this.state.validEmail && this.state.validPassword) {
-      const { username, email, password } = this.state;
-      this.props.authenticate(username, email, password);
-      this.setState({
-        username: '',
-        email: '',
-        password: '',
-        validEmail: false,
-        validPassword: false,
-      });
-    }
-  return;
-}
+    this.setState((state) => {
+      const { 
+        validUsername,
+        validEmail,
+        validPassword,
+        username,
+        email,
+        password,
+      } = state;
+      if (validUsername && validEmail && validPassword) {
+        this.props.authenticate(username, email, password);
+        return {
+          username: '',
+          email: '',
+          password: '',
+          validUsername: false,
+          validEmail: false,
+          validPassword: false,
+        };
+      } else {
+        return;
+      }
+    });
+  }
 
   checkPassword(e) {
     // Minimum eight characters, at least one uppercase letter, 
     // one lowercase letter, one number and one special character:
     const { value } = e.target;
+    console.log(value);
     const validPassword = validatePassword(value);
+    console.log(validPassword);
     this.setState({ validPassword });
   }
 
@@ -80,8 +96,9 @@ class Login extends Component {
   }
 
   checkUsername(e) {
-    if (e.target.value) return this.setState({ validUsername: true })
-    this.setState({ validUsername: false });
+    const { value } = e.target;
+    if (value) return this.setState({ validUsername: true });
+    return this.setState({ validUsername: false });
   }
 
   render() {
@@ -95,7 +112,6 @@ class Login extends Component {
             name="username"
             value={this.state.username}
             onChange={this.handleUsername}
-            onBlur={(e) => this.checkUsername(e)}
           />
         </div>
         <div>
@@ -105,7 +121,6 @@ class Login extends Component {
             name="email"
             value={this.state.email}
             onChange={this.handleEmail}
-            onBlur={(e) => this.checkEmail(e)}
           />
         </div>
         {this.state.email && !this.state.validEmail ? <div>{this.msgMap['email']}</div> : null }
@@ -116,11 +131,10 @@ class Login extends Component {
             name="password"
             value={this.state.password}
             onChange={this.handlePassword}
-            onBlur={(e) => this.checkPassword(e)}
           />
         </div>
         {this.state.password && !this.state.validPassword ? <div>{this.msgMap['password']}</div> : null }
-        <button onClick={this.handleSubmit}>submit</button>
+        <button onClick={() => this.handleSubmit()}>submit</button>
       </div>
     );
   }
