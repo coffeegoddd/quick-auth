@@ -25,6 +25,7 @@ class Login extends Component {
   }
 
   handleUsername(e) {
+    e.preventDefault();
     const username = e.target.value;
     this.setState({
       username,
@@ -73,7 +74,7 @@ class Login extends Component {
     return (
       <div>
         LOGIN
-        <form>
+        <div>
           <input
             type="text"
             placeholder="username"
@@ -81,8 +82,8 @@ class Login extends Component {
             value={this.state.username}
             onChange={this.handleUsername}
           />
-        </form>
-        <form>
+        </div>
+        <div>
           <input
             type="email"
             placeholder="email"
@@ -90,9 +91,9 @@ class Login extends Component {
             value={this.state.email}
             onChange={this.handleEmail}
           />
-        </form>
+        </div>
         {this.state.email && this.state.submitClicked && !this.state.validEmail ? <div>{this.msgMap['email']}</div> : null }
-        <form>
+        <div>
           <input
             type="password"
             placeholder="password"
@@ -100,7 +101,7 @@ class Login extends Component {
             value={this.state.password}
             onChange={this.handlePassword}
           />
-        </form>
+        </div>
         {this.state.password && this.state.submitClicked && !this.state.validPassword ? <div>{this.msgMap['password']}</div> : null }
         <button onClick={this.handleSubmit}>submit</button>
       </div>
