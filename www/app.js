@@ -11,7 +11,7 @@ const db = {};
 db['kevin5@tax.com'] = {
   username: 'kevin',
   email: 'kevin5@tax.com',
-  password: 'helloWorld1',
+  password: 'helloWorld1*',
 };
 
 // fake sessionStore
@@ -95,8 +95,15 @@ app.post('/signup', (req, res, next) => {
 
 // validate sessions route
 app.post('/validate', (req, res, next) => {
+  console.log(ss)
   const { sessionId } = req.body;
-  return ss[sessionId] ? res.status(201).send('success'): res.status(200).send('invalid');
+  if (ss[sessionId]) return res.status(201).send('success');
+  else {
+    res.clearCookie('coffee');
+    res.cookie('coffee', 's3ss10nExp1r3b', { maxAge: 180000 });
+    res.status(200).send('invalid');
+  }
+  // return ss[sessionId] ? res.status(201).send('success'): res.status(200).send('invalid');
 });
 
 

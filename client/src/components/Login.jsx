@@ -83,9 +83,7 @@ class Login extends Component {
     // Minimum eight characters, at least one uppercase letter, 
     // one lowercase letter, one number and one special character:
     const { value } = e.target;
-    console.log(value);
     const validPassword = validatePassword(value);
-    console.log(validPassword);
     this.setState({ validPassword });
   }
 

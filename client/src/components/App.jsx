@@ -14,28 +14,30 @@ import Login from './Login';
 import Hidden from './Hidden';
 import Logout from './Logout';
 
-const PrivateRoute = ({ component: Component, auth, ...rest}) => (
+const PrivateRoute = ({ component: Component, auth, update, valid, ...rest}) => (
   <Route {...rest} render={(props) => {
-    return auth ? <Component {...props} /> : <Redirect to="/login" />;
+    return auth ? <Component {...props}  update={update} valid={valid}/> : <Redirect to="/login" />;
   }}/>
 );
 
 class App extends Component {
   constructor(props) {
     super(props);
-    const { coffee } = this.props.cookies.cookies
     this.state = {
       isAuthenticated: false,
-      sessionId: coffee,
+      sessionId: '',
       restricted: '',
     };
     this.authenticate = this.authenticate.bind(this);
     this.signup = this.signup.bind(this);
     this.isSessionValid = this.isSessionValid.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
+    this.getCookieUpdateSessionId = this.getCookieUpdateSessionId.bind(this);
   }
 
   componentDidMount() {
+    console.log('actual cookie -->', this.props.cookies.cookies.coffee);
+    this.getCookieUpdateSessionId();
     this.isSessionValid();
   }
 
@@ -87,23 +89,39 @@ class App extends Component {
   }
 
   isSessionValid() {
-    const { sessionId } = this.state;
-    axios.post(`/validate`, {
-      sessionId,
-    })
-      .then(({ data }) => {
-        if (data === 'success') {
-          this.setState({
-            isAuthenticated: true,
-          });
-        }
+    console.log('checking...');
+    this.setState((state) => {
+      const { sessionId } = state;
+      axios.post(`/validate`, {
+        sessionId,
       })
-      .catch(err => {
-        console.log(err);
-        this.setState({
-          sessionId: '',
+        .then(({ data }) => {
+          if (data === 'success') {
+            console.log('valid');
+            this.setState({
+              isAuthenticated: true,
+            });
+          } else {
+            this.setState({
+              isAuthenticated: false,
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.setState({
+            sessionId: '',
+          });
         });
-      });
+        return;
+    });
+  }
+
+  getCookieUpdateSessionId() {
+    const { coffee } = this.props.cookies.cookies;
+    this.setState({
+      sessionId: coffee,
+    });
   }
 
   handleLogout() {
@@ -122,7 +140,7 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <Nav />
+        <Nav />{console.log(this.state.sessionId)}
         <Switch>
           <Route
             path="/signup"
@@ -136,6 +154,8 @@ class App extends Component {
             path="/hidden"
             component={Hidden}
             auth={this.state.isAuthenticated}
+            update={this.getCookieUpdateSessionId}
+            valid={this.isSessionValid}
           />
         </Switch>
         {this.state.isAuthenticated ? <Logout logout={this.handleLogout}/> : null}

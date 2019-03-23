@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-const Hidden = () => (
-  <div>
-    Follow me on twitter
-    @coffeegoddd ;)
-  </div>
-);
+class Hidden extends Component {
+  constructor(props) {
+    super(props);
+  }
+  componentDidMount() {
+    this.props.update();
+    this.props.valid();
+  }
+  render() {
+    return (<div>
+      Follow me on twitter
+      @coffeegoddd ;)
+    </div>);
+  }
+}
 
 export default Hidden;
