@@ -16,7 +16,7 @@ request once. React-router takes care of the rest on the client side without int
 That is until the client needs to either signup or login, at which point the client sends POSTs to either of those respective endpoints and then is authenticated and given a new session, or is created in my db and given a new session.
 
 To install -->
-Clone repo and enter root directory.
+Clone repo and enter root directory. (node v11.8.0)
 
 $ npm install
 
